@@ -1,7 +1,9 @@
 
-package org.usfirst.frc.team4043.robot;
+package org.usfirst.frc.team2471.robot;
 
-import org.usfirst.frc.team4043.robot.Drive;
+import org.usfirst.frc.team2471.robot.Drive;
+
+import com.autodesk.bxd.EmulatorControl;
 
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -19,6 +21,10 @@ public class Robot extends IterativeRobot {
 	public Gyro gyro;
 	public Joystick jox = new Joystick(0);
 	public Drive drive;
+	
+	public static void main(String[] args){
+		EmulatorControl.start(9999, Robot.class);
+	}
 	
     /**
      * This function is run when the robot is first started up and should be
