@@ -1,49 +1,53 @@
-package org.usfirst.frc.team2471.robot;
 
-import edu.wpi.first.wpilibj.CANTalon;
+
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Talon;
 
 public class Drive {
-	private CANTalon motorFL;
-	private CANTalon motorFR;
-	private CANTalon motorBL;
-	private CANTalon motorBR;
-	
+	private Talon motorFL;
+	private Talon motorFR;
+	private Talon motorBL;
+	private Talon motorBR;
 	private Joystick jox;
-	
-	private double max;
-	
 	private Gyro gyro;
+	private	PID pid;
+	private double max;
 	
 	public Drive(Joystick jox, Gyro gyro) {
 		this.jox = jox;
 		this.gyro = gyro;
 		
-		motorFL = new CANTalon(0);
-		motorFR = new CANTalon(1);
-		motorBL = new CANTalon(2);
-		motorBR = new CANTalon(3);
+		pid = new PID(Config.P, Config.I, Config.D);
+		
+		motorFL = new Talon(0);
+		motorFR = new Talon(1);
+		motorBL = new Talon(2);
+		motorBR = new Talon(3);
 	}
 	
 	public void run(){
 		double forward = -jox.getRawAxis(1); // push joystick1 forward to go forward
 		double right = jox.getRawAxis(0); // push joystick1 to the right to strafe right
 		double clockwise = jox.getRawAxis(2); // push joystick2 to the right to rotate clockwise 
-		fieldCentricSetSpeed(forward, right, clockwise, gyro.getAngle());
+		
+		pid.update(gyro.getAngle(), Math.atan2(jox.getRawAxis(1),jox.getRawAxis(0)));
+		
+		fieldCentricSetSpeed(forward, right, clockwise, gyro.getAngle(), pid.getOutput());
 	}
 	
-	private void fieldCentricSetSpeed(double forward, double right, double clockwise, double theta) {
+	private void fieldCentricSetSpeed(double forward, double right, double clockwise, double theta, double PIDCorrection) {
 		theta = theta*180/Math.PI;
 		double temp = forward*Math.cos(theta) + right*Math.sin(theta);
 		right = -forward*Math.sin(theta) + right*Math.cos(theta);
 		forward = temp; 
-		setSpeed(forward, right, clockwise);
+		
+		setSpeed(forward, right, clockwise + PIDCorrection);
 	}
 	
 	//max = Math.max(Math.max(Math.abs(rear_left), Math.abs(rear_right)), Math.max(Math.abs(front_left), Math.abs(front_left)));
 	//max = Math.max(Math.max(rear_left, rear_right), Math.max(front_left, front_left));
-	private void setSpeed(double forward, double right, double clockwise) {
+	public void setSpeed(double forward, double right, double clockwise) {
 		double front_right= motorFR.get();
 		double front_left = motorFL.get();
 		double back_left = motorBL.get();

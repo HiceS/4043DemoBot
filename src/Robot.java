@@ -1,7 +1,6 @@
 
-package org.usfirst.frc.team2471.robot;
 
-import org.usfirst.frc.team2471.robot.Drive;
+import org.usfirst.frc.team4043.robot.Drive;
 
 import com.autodesk.bxd.EmulatorControl;
 
@@ -17,10 +16,10 @@ import edu.wpi.first.wpilibj.Joystick;
  */
 public class Robot extends IterativeRobot {
 	
-
 	public Gyro gyro;
-	public Joystick jox = new Joystick(0);
+	public Joystick jox;
 	public Drive drive;
+	public Autonomous auto;
 	
 	public static void main(String[] args){
 		EmulatorControl.start(9999, Robot.class);
@@ -32,16 +31,25 @@ public class Robot extends IterativeRobot {
      */
     public void robotInit() {
     	gyro.initGyro();
-    	drive = new Drive(jox,gyro);
+    	drive = new Drive(jox, gyro);
+    	jox = new Joystick(0);
     }
 
+    public void autonomousInit() {
+    	auto = new Autonomous(drive);
+    	auto.init();
+    }
+    
     /**
      * This function is called periodically during autonomous
      */
     public void autonomousPeriodic() {
-
+    	auto.dance();
     }
 
+    private void autonomousDisabled() {
+
+    }
     	
     /**
      * This function is called periodically during operator control
@@ -51,7 +59,6 @@ public class Robot extends IterativeRobot {
     }
     
 
-    
     /**
      * This function is called periodically during test mode
      */
