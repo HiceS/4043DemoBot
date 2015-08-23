@@ -11,14 +11,14 @@ public class Drive {
 	private Talon motorBR;
 	private Joystick jox;
 	private Gyro gyro;
-	private	PID pid;
+	private	PID clockwisePID;
 	private double max;
 	
 	public Drive(Joystick jox, Gyro gyro) {
 		this.jox = jox;
 		this.gyro = gyro;
 		
-		pid = new PID(Config.P, Config.I, Config.D);
+		clockwisePID = new PID(Config.clockwiseP, Config.clockwiseI, Config.clockwiseD);
 		
 		motorFL = new Talon(0);
 		motorFR = new Talon(1);
@@ -31,9 +31,9 @@ public class Drive {
 		double right = jox.getRawAxis(0); // push joystick1 to the right to strafe right
 		double clockwise = jox.getRawAxis(2); // push joystick2 to the right to rotate clockwise 
 		
-		pid.update(gyro.getAngle(), Math.atan2(jox.getRawAxis(1),jox.getRawAxis(0)));
+		clockwisePID.update(gyro.getAngle(), Math.atan2(jox.getRawAxis(1),jox.getRawAxis(0)));
 		
-		fieldCentricSetSpeed(forward, right, clockwise, gyro.getAngle(), pid.getOutput());
+		fieldCentricSetSpeed(forward, right, clockwise, gyro.getAngle(), clockwisePID.getOutput());
 	}
 	
 	private void fieldCentricSetSpeed(double forward, double right, double clockwise, double theta, double PIDCorrection) {
