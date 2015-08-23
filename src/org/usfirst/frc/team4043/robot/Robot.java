@@ -20,11 +20,6 @@ public class Robot extends IterativeRobot {
 	public Joystick jox;
 	public Drive drive;
 	public Autonomous auto;
-	
-	public static void main(String[] args){
-		EmulatorControl.start(9999, Robot.class);
-	}
-	
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
